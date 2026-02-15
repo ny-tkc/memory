@@ -25,6 +25,7 @@ export const translations: Record<string, Record<string, string>> = {
     configureTable: '変換表を編集', allRows: '全行', save: '保存', wordPlaceholder: '単語を入力', practiceRows: '出題行を選択',
     startPair: '練習開始', pass: '正解', fail: '不正解', front: 'ペア', lpBack: 'イメージ', selectRowsMsg: '練習したい行（1文字目）を選んでください',
     tableEditDesc: '1文字目を選択して単語を登録', close: '閉じる',
+    listenMode: '読み上げモード', listenModeDesc: '日付を音声で読み上げ、曜日を回答します', replay: 'もう一度聞く',
   },
   en: {
     appTitle: 'MemoryPro', calendar: 'Calendar Calc', number: 'Number Memory', card: 'Card Memory',
@@ -52,5 +53,6 @@ export const translations: Record<string, Record<string, string>> = {
     configureTable: 'Edit Table', allRows: 'All Rows', save: 'Save', wordPlaceholder: 'Enter word', practiceRows: 'Select Rows',
     startPair: 'Start Practice', pass: 'Pass', fail: 'Fail', front: 'Pair', lpBack: 'Image', selectRowsMsg: 'Select rows (1st char) to practice',
     tableEditDesc: 'Select row to edit words', close: 'Close',
+    listenMode: 'Listen Mode', listenModeDesc: 'Answer the day of week by listening to the date', replay: 'Replay',
   },
 };

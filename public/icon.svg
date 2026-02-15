@@ -1,43 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#e0c3fc"/>
-      <stop offset="50%" style="stop-color:#c4b5fd"/>
-      <stop offset="100%" style="stop-color:#a5b4fc"/>
-    </linearGradient>
-    <linearGradient id="brainL" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f9a8d4"/>
-      <stop offset="100%" style="stop-color:#f0abfc"/>
-    </linearGradient>
-    <linearGradient id="brainR" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#c4b5fd"/>
-      <stop offset="100%" style="stop-color:#93c5fd"/>
-    </linearGradient>
-  </defs>
+  <!-- Pure white background -->
+  <rect width="512" height="512" fill="#ffffff"/>
 
-  <!-- Pastel background -->
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- Brain - monochrome thick line drawing -->
+  <g transform="translate(256, 248)" fill="none" stroke="#222222" stroke-linecap="round" stroke-linejoin="round">
 
-  <!-- Brain - centered and large -->
-  <g transform="translate(256, 256) scale(2.2)">
-    <!-- Left hemisphere -->
-    <path d="M-6,-60 C-20,-62 -38,-55 -50,-40 C-62,-25 -65,-8 -62,8 C-60,20 -52,30 -42,36 C-48,44 -46,55 -35,60 C-26,64 -16,60 -10,52 C-8,56 -4,58 0,58 L0,-60 Z"
-      fill="url(#brainL)"/>
-    <!-- Right hemisphere -->
-    <path d="M6,-60 C20,-62 38,-55 50,-40 C62,-25 65,-8 62,8 C60,20 52,30 42,36 C48,44 46,55 35,60 C26,64 16,60 10,52 C8,56 4,58 0,58 L0,-60 Z"
-      fill="url(#brainR)"/>
+    <!-- Left hemisphere outline -->
+    <path d="M-4,-120 C-30,-122 -60,-118 -85,-100 C-110,-82 -125,-55 -130,-28 C-135,0 -132,28 -120,50 C-112,64 -100,75 -86,82 C-92,95 -88,112 -72,122 C-58,130 -40,128 -28,118 C-20,126 -12,130 -4,130"
+      stroke-width="12"/>
 
-    <!-- Brain folds - left -->
-    <path d="M-46,-28 C-34,-18 -22,-30 -6,-22" stroke="white" stroke-width="2.5" fill="none" opacity="0.55" stroke-linecap="round"/>
-    <path d="M-50,2 C-36,12 -22,-2 -6,8" stroke="white" stroke-width="2.5" fill="none" opacity="0.55" stroke-linecap="round"/>
-    <path d="M-40,30 C-28,22 -16,32 -6,26" stroke="white" stroke-width="2" fill="none" opacity="0.45" stroke-linecap="round"/>
-
-    <!-- Brain folds - right -->
-    <path d="M46,-28 C34,-18 22,-30 6,-22" stroke="white" stroke-width="2.5" fill="none" opacity="0.55" stroke-linecap="round"/>
-    <path d="M50,2 C36,12 22,-2 6,8" stroke="white" stroke-width="2.5" fill="none" opacity="0.55" stroke-linecap="round"/>
-    <path d="M40,30 C28,22 16,32 6,26" stroke="white" stroke-width="2" fill="none" opacity="0.45" stroke-linecap="round"/>
+    <!-- Right hemisphere outline -->
+    <path d="M4,-120 C30,-122 60,-118 85,-100 C110,-82 125,-55 130,-28 C135,0 132,28 120,50 C112,64 100,75 86,82 C92,95 88,112 72,122 C58,130 40,128 28,118 C20,126 12,130 4,130"
+      stroke-width="12"/>
 
     <!-- Center line -->
-    <line x1="0" y1="-55" x2="0" y2="54" stroke="white" stroke-width="1.5" opacity="0.3"/>
+    <line x1="0" y1="-116" x2="0" y2="126" stroke-width="7"/>
+
+    <!-- Brain folds - left hemisphere -->
+    <path d="M-110,-52 C-88,-36 -60,-56 -12,-42" stroke-width="8"/>
+    <path d="M-122,4 C-96,22 -60,-8 -10,14" stroke-width="8"/>
+    <path d="M-104,52 C-80,38 -50,58 -10,46" stroke-width="7"/>
+
+    <!-- Brain folds - right hemisphere -->
+    <path d="M110,-52 C88,-36 60,-56 12,-42" stroke-width="8"/>
+    <path d="M122,4 C96,22 60,-8 10,14" stroke-width="8"/>
+    <path d="M104,52 C80,38 50,58 10,46" stroke-width="7"/>
+
+    <!-- Brain stem -->
+    <path d="M-16,126 C-16,148 -10,162 0,170 C10,162 16,148 16,126" stroke-width="9"/>
   </g>
 </svg>

@@ -27,7 +27,7 @@ export const CalendarTrainer = ({ onBack, globalSettings, t }: TrainerProps) => 
 
     const [settings, setSettings] = useState(() => {
         const saved = localStorage.getItem('calendar_settings');
-        return saved ? JSON.parse(saved) : { yearMode: 'western', showNumbers: true, startDay: 0, timerFormat: 'mm:ss' };
+        return saved ? JSON.parse(saved) : { yearMode: 'western', showNumbers: true, startDay: 0, timerFormat: 'mm:ss', listenMode: false };
     });
     const [currentSessionId, setCurrentSessionId] = useState<any>(null);
     const [isNewRecord, setIsNewRecord] = useState(false);
@@ -45,6 +45,34 @@ export const CalendarTrainer = ({ onBack, globalSettings, t }: TrainerProps) => 
         else if (timerRef.current) cancelAnimationFrame(timerRef.current);
         return () => { if (timerRef.current) cancelAnimationFrame(timerRef.current); };
     }, [gameState, updateTimer]);
+
+    const speakDate = useCallback((date: Date) => {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        let text: string;
+        if (globalSettings.lang === 'en') {
+            text = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        } else {
+            const y = date.getFullYear(), m = date.getMonth() + 1, d = date.getDate();
+            const era = getJapaneseEra(date);
+            if (settings.yearMode === 'japanese') text = `${era} ${m}月${d}日`;
+            else if (settings.yearMode === 'both') text = `${y}年 ${era} ${m}月${d}日`;
+            else text = `${y}年 ${m}月${d}日`;
+        }
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = globalSettings.lang === 'ja' ? 'ja-JP' : 'en-US';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+    }, [globalSettings.lang, settings.yearMode]);
+
+    useEffect(() => {
+        if (gameState === 'playing' && settings.listenMode && questions.length > 0) {
+            const timer = setTimeout(() => speakDate(questions[activeQuestion]), 300);
+            return () => clearTimeout(timer);
+        }
+    }, [activeQuestion, gameState, settings.listenMode, speakDate, questions]);
+
+    useEffect(() => { return () => { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); }; }, []);
 
     const generateRandomDate = (range: string) => {
         let startYear, endYear;
@@ -207,6 +235,7 @@ export const CalendarTrainer = ({ onBack, globalSettings, t }: TrainerProps) => 
                     </select>
                 </div>
                 <button onClick={startCountdown} className="w-full py-6 bg-indigo-600 text-white rounded-[2rem] shadow-lg active:scale-95 transition-all text-left px-8 relative overflow-hidden group">
+                    {settings.listenMode && <div className="absolute top-2 left-4 bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold z-10"><i className="fa-solid fa-volume-high mr-1"></i>{t.listenMode}</div>}
                     <div className="relative z-10"><div className="text-2xl font-black mb-1">{t.calcStart}</div><div className="text-xs font-bold opacity-70">{t.descCal}</div></div>
                     <div className="absolute right-6 top-1/2 -translate-y-1/2 text-4xl opacity-20 group-hover:scale-110 transition-transform"><i className="fa-solid fa-play"></i></div>
                 </button>
@@ -236,6 +265,14 @@ export const CalendarTrainer = ({ onBack, globalSettings, t }: TrainerProps) => 
                                     <button onClick={() => updateLocalSettings('showNumbers', false)} className={`py-2.5 rounded-xl border-2 font-bold text-xs transition-all ${!settings.showNumbers ? 'bg-indigo-50 border-indigo-600 text-indigo-600' : 'border-slate-50 bg-slate-50 text-slate-400'}`}>OFF</button>
                                 </div>
                             </section>
+                            <section>
+                                <label className="text-xs font-bold text-slate-400 uppercase mb-2 block tracking-widest">{t.listenMode}</label>
+                                <div className="text-[10px] text-slate-400 mb-2">{t.listenModeDesc}</div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button onClick={() => updateLocalSettings('listenMode', true)} className={`py-2.5 rounded-xl border-2 font-bold text-xs transition-all ${settings.listenMode ? 'bg-indigo-50 border-indigo-600 text-indigo-600' : 'border-slate-50 bg-slate-50 text-slate-400'}`}>ON</button>
+                                    <button onClick={() => updateLocalSettings('listenMode', false)} className={`py-2.5 rounded-xl border-2 font-bold text-xs transition-all ${!settings.listenMode ? 'bg-indigo-50 border-indigo-600 text-indigo-600' : 'border-slate-50 bg-slate-50 text-slate-400'}`}>OFF</button>
+                                </div>
+                            </section>
                         </div>
                         <button onClick={() => setIsLocalSettingsOpen(false)} className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-2xl shadow-lg active:scale-95 transition-all">{t.close}</button>
                     </div>
@@ -254,12 +291,13 @@ export const CalendarTrainer = ({ onBack, globalSettings, t }: TrainerProps) => 
                 <button onClick={startCountdown} className="text-slate-400 hover:text-slate-600 py-2 text-sm font-bold flex flex-col items-center gap-1 transition-colors"><i className="fa-solid fa-rotate-right"></i> {t.restart}</button>
             </div>
             <div className="text-center mb-4 flex-none"><span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">{activeQuestion + 1} / 5</span></div>
-            <div className="space-y-2 overflow-y-auto no-scrollbar py-2 h-[45vh] flex-none">
+            <div className={`space-y-2 overflow-y-auto no-scrollbar py-2 flex-none ${settings.listenMode ? 'h-[35vh]' : 'h-[45vh]'}`}>
                 {questions.map((q, idx) => {
                     const isAnswered = idx < laps.length; const isActive = idx === activeQuestion; const lap = laps[idx];
-                    return (<div key={idx} className={`p-4 rounded-2xl transition-all duration-300 ${isActive ? 'bg-indigo-50 scale-[1.02]' : isAnswered ? 'bg-slate-50 opacity-60' : 'opacity-20 blur-[1px]'}`}><div className="flex items-center justify-between"><div className="flex items-center gap-3"><div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] ${isActive ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-500'}`}>{idx + 1}</div><span className={`font-bold ${isActive ? 'text-lg' : 'text-sm'}`}>{isActive || isAnswered ? formatDate(q) : '????年??月??日'}</span></div>{isAnswered && (<div className="text-base font-bold text-slate-500 ml-auto">({lap.userAnswer})</div>)}</div></div>);
+                    return (<div key={idx} className={`p-4 rounded-2xl transition-all duration-300 ${isActive ? 'bg-indigo-50 scale-[1.02]' : isAnswered ? 'bg-slate-50 opacity-60' : 'opacity-20 blur-[1px]'}`}><div className="flex items-center justify-between"><div className="flex items-center gap-3"><div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] ${isActive ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-500'}`}>{idx + 1}</div><span className={`font-bold ${isActive ? 'text-lg' : 'text-sm'}`}>{settings.listenMode && isActive ? <i className="fa-solid fa-volume-high text-indigo-400"></i> : (isActive || isAnswered ? formatDate(q) : '????年??月??日')}</span></div>{isAnswered && (<div className="text-base font-bold text-slate-500 ml-auto">({lap.userAnswer})</div>)}</div></div>);
                 })}
             </div>
+            {settings.listenMode && <div className="flex-none flex justify-center py-2"><button onClick={() => speakDate(questions[activeQuestion])} className="flex items-center gap-2 px-6 py-3 bg-indigo-100 text-indigo-600 rounded-2xl font-bold text-sm active:scale-95 transition-all hover:bg-indigo-200"><i className="fa-solid fa-volume-high mr-2"></i>{t.replay}</button></div>}
             <div className="flex-grow flex items-start justify-center pt-4"><div className="grid grid-cols-7 gap-1 w-full max-w-sm">{dayList.map(({ label, index }) => (<button key={label} onClick={() => handleAnswer(index)} className={`aspect-[3/4] flex flex-col items-center justify-center gap-1 rounded-xl shadow-sm border active:scale-95 transition-transform ${index === 0 ? 'text-red-500 bg-red-50 border-red-100' : index === 6 ? 'text-blue-500 bg-blue-50 border-blue-100' : 'bg-white border-slate-200 text-slate-700'}`}><span className="font-bold text-lg sm:text-xl">{label}</span>{settings.showNumbers && <span className="text-[10px] font-black opacity-40">{index}</span>}</button>))}</div></div>
         </div>
     );

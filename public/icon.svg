@@ -1,52 +1,92 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Background gradient -->
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="50%" style="stop-color:#6366f1"/>
       <stop offset="100%" style="stop-color:#4f46e5"/>
     </linearGradient>
-    <linearGradient id="card1bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffffff"/>
-      <stop offset="100%" style="stop-color:#f1f5f9"/>
+    <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f9a8d4"/>
+      <stop offset="100%" style="stop-color:#f472b6"/>
+    </linearGradient>
+    <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="100%" style="stop-color:#f59e0b"/>
     </linearGradient>
   </defs>
 
-  <!-- Rounded square background -->
+  <!-- Background -->
   <rect width="512" height="512" rx="108" fill="url(#bg)"/>
 
-  <!-- Subtle pattern overlay -->
-  <rect width="512" height="512" rx="108" fill="white" opacity="0.05"/>
-
-  <!-- Back card (tilted left) -->
-  <g transform="translate(256,270) rotate(-12)">
-    <rect x="-70" y="-95" width="140" height="190" rx="12" fill="#1e1b4b" stroke="#312e81" stroke-width="2"/>
-    <rect x="-58" y="-83" width="116" height="166" rx="6" fill="none" stroke="#4338ca" stroke-width="1.5" opacity="0.5"/>
-    <!-- Diamond pattern on back -->
-    <path d="M0,-40 L15,-25 L0,-10 L-15,-25 Z" fill="#4338ca" opacity="0.4"/>
-    <path d="M0,10 L15,25 L0,40 L-15,25 Z" fill="#4338ca" opacity="0.4"/>
+  <!-- Subtle grid pattern -->
+  <g opacity="0.04" fill="white">
+    <rect x="80" y="80" width="80" height="80" rx="8"/>
+    <rect x="176" y="80" width="80" height="80" rx="8"/>
+    <rect x="272" y="80" width="80" height="80" rx="8"/>
+    <rect x="80" y="176" width="80" height="80" rx="8"/>
+    <rect x="272" y="176" width="80" height="80" rx="8"/>
+    <rect x="352" y="176" width="80" height="80" rx="8"/>
+    <rect x="176" y="352" width="80" height="80" rx="8"/>
+    <rect x="352" y="352" width="80" height="80" rx="8"/>
   </g>
 
-  <!-- Front card (tilted right) - Ace of Spades -->
-  <g transform="translate(272,256) rotate(8)">
-    <rect x="-70" y="-95" width="140" height="190" rx="12" fill="url(#card1bg)" stroke="#cbd5e1" stroke-width="2"/>
-
-    <!-- Top-left corner -->
-    <text x="-52" y="-65" font-family="Inter, sans-serif" font-size="22" font-weight="800" fill="#1e293b">A</text>
-    <text x="-50" y="-47" font-family="serif" font-size="16" fill="#1e293b">&#9824;</text>
-
-    <!-- Center spade - large -->
-    <text x="0" y="15" font-family="serif" font-size="72" fill="#1e293b" text-anchor="middle">&#9824;</text>
-
-    <!-- Bottom-right corner (rotated) -->
-    <g transform="translate(52,80) rotate(180)">
-      <text x="-2" y="-10" font-family="Inter, sans-serif" font-size="22" font-weight="800" fill="#1e293b">A</text>
-      <text x="0" y="8" font-family="serif" font-size="16" fill="#1e293b">&#9824;</text>
-    </g>
+  <!-- Central brain icon -->
+  <g transform="translate(256, 230)">
+    <!-- Brain left hemisphere -->
+    <path d="M-8,-65 C-45,-65 -72,-40 -72,-5 C-72,10 -65,22 -55,30 C-60,38 -58,52 -45,58 C-38,62 -28,60 -20,55 C-15,62 -8,65 -2,65 L-2,-65 Z"
+      fill="url(#brainGrad)" opacity="0.95"/>
+    <!-- Brain right hemisphere -->
+    <path d="M8,-65 C45,-65 72,-40 72,-5 C72,10 65,22 55,30 C60,38 58,52 45,58 C38,62 28,60 20,55 C15,62 8,65 2,65 L2,-65 Z"
+      fill="url(#brainGrad)" opacity="0.85"/>
+    <!-- Brain folds -->
+    <path d="M-50,-30 C-35,-20 -20,-35 -8,-25" stroke="white" stroke-width="3" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M-55,5 C-40,15 -25,0 -8,10" stroke="white" stroke-width="3" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M-45,35 C-30,25 -18,35 -8,30" stroke="white" stroke-width="2.5" fill="none" opacity="0.4" stroke-linecap="round"/>
+    <path d="M50,-30 C35,-20 20,-35 8,-25" stroke="white" stroke-width="3" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M55,5 C40,15 25,0 8,10" stroke="white" stroke-width="3" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M45,35 C30,25 18,35 8,30" stroke="white" stroke-width="2.5" fill="none" opacity="0.4" stroke-linecap="round"/>
+    <!-- Center line -->
+    <line x1="0" y1="-60" x2="0" y2="60" stroke="white" stroke-width="2" opacity="0.3"/>
   </g>
 
-  <!-- Small brain/memory icon at bottom -->
-  <g transform="translate(256, 420)">
-    <circle cx="0" cy="0" r="28" fill="white" opacity="0.15"/>
-    <text x="0" y="8" font-family="sans-serif" font-size="28" fill="white" text-anchor="middle" opacity="0.9">&#129504;</text>
+  <!-- Floating icons around brain -->
+  <!-- Calendar (top-left) -->
+  <g transform="translate(105, 155)">
+    <rect x="-22" y="-22" width="44" height="44" rx="10" fill="white" opacity="0.15"/>
+    <text x="0" y="8" font-family="Inter, sans-serif" font-size="26" fill="white" text-anchor="middle" opacity="0.9">&#128197;</text>
+  </g>
+
+  <!-- Numbers (top-right) -->
+  <g transform="translate(407, 155)">
+    <rect x="-22" y="-22" width="44" height="44" rx="10" fill="white" opacity="0.15"/>
+    <text x="0" y="7" font-family="Inter, sans-serif" font-size="20" font-weight="900" fill="white" text-anchor="middle" opacity="0.9">42</text>
+  </g>
+
+  <!-- Card suit (left) -->
+  <g transform="translate(95, 280)">
+    <rect x="-22" y="-22" width="44" height="44" rx="10" fill="white" opacity="0.15"/>
+    <text x="0" y="9" font-family="serif" font-size="28" fill="white" text-anchor="middle" opacity="0.9">&#9824;</text>
+  </g>
+
+  <!-- Kana (right) -->
+  <g transform="translate(417, 280)">
+    <rect x="-22" y="-22" width="44" height="44" rx="10" fill="white" opacity="0.15"/>
+    <text x="0" y="9" font-family="'Noto Sans JP', sans-serif" font-size="22" font-weight="700" fill="white" text-anchor="middle" opacity="0.9">あ</text>
+  </g>
+
+  <!-- Spark/lightning effects -->
+  <g opacity="0.7">
+    <!-- Top spark -->
+    <path d="M256,100 L260,115 L268,108 L262,125" stroke="url(#sparkGrad)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Left spark -->
+    <path d="M155,205 L165,210 L158,218" stroke="url(#sparkGrad)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Right spark -->
+    <path d="M357,205 L347,210 L354,218" stroke="url(#sparkGrad)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- App name "MP" at bottom -->
+  <g transform="translate(256, 410)">
+    <text x="0" y="0" font-family="Inter, sans-serif" font-size="48" font-weight="900" fill="white" text-anchor="middle" letter-spacing="6" opacity="0.95">MP</text>
+    <text x="0" y="28" font-family="'Noto Sans JP', sans-serif" font-size="14" font-weight="700" fill="white" text-anchor="middle" opacity="0.5" letter-spacing="8">MEMORY PRO</text>
   </g>
 </svg>

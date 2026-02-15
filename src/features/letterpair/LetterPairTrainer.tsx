@@ -1,10 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
-import { KANA_ROWS } from '@/data/constants';
-import { DEFAULT_LETTER_MASTER } from '@/data/letterPairMaster';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { DEFAULT_LETTER_MASTER, KANA_GROUP_MAP } from '@/data/letterPairMaster';
 import { formatTime, handleHomeWithConfirm } from '@/utils/helpers';
 import type { TrainerProps } from '@/types';
 
-const LetterPairSettingsModal = ({ settings, updateSettings, onClose, t }: any) => {
+const ROW_KEYS = Object.keys(KANA_GROUP_MAP) as string[];  // ['あ','か','さ','た','な','は']
+
+const LetterPairSettingsModal = ({ settings, updateSettings, onClose, t, pairCount }: any) => {
+    const allSelected = settings.activeRows.length === ROW_KEYS.length;
+    const toggleAll = () => {
+        updateSettings('activeRows', allSelected ? [] : [...ROW_KEYS]);
+    };
+
     return (
         <div className="fixed inset-0 z-[110] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
             <div className="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl overflow-y-auto max-h-[85vh] no-scrollbar">
@@ -14,16 +20,31 @@ const LetterPairSettingsModal = ({ settings, updateSettings, onClose, t }: any) 
                 </div>
                 <div className="space-y-5">
                     <section>
-                        <label className="text-xs font-bold text-slate-400 uppercase mb-2 block tracking-widest">{t.rowSelect}</label>
-                        <div className="grid grid-cols-3 gap-2">
-                            {KANA_ROWS.map((r: any) => (
-                                <button key={r} onClick={() => updateSettings('activeRows', settings.activeRows.includes(r) ? settings.activeRows.filter((x: any) => x!==r) : [...settings.activeRows, r])} className={`py-2 rounded-xl border-2 font-bold text-sm transition-all ${settings.activeRows.includes(r) ? 'bg-amber-50 border-amber-600 text-amber-600' : 'border-slate-50 bg-slate-50 text-slate-400'}`}>{r}行</button>
-                            ))}
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t.rowSelect}</label>
+                            <button onClick={toggleAll} className="text-xs font-bold text-amber-500 hover:text-amber-600 transition-colors">
+                                {allSelected ? '全解除' : '全選択'}
+                            </button>
                         </div>
-                    </section>
-                    <section>
-                        <label className="text-xs font-bold text-slate-400 uppercase mb-2 block tracking-widest">{t.qCount}</label>
-                        <input type="number" min="1" max="100" value={settings.qCount} onChange={e=>updateSettings('qCount', Math.max(1, Math.min(100, parseInt(e.target.value)||10)))} className="w-full p-2.5 border-2 border-slate-100 rounded-xl font-bold text-center text-slate-700 bg-white" />
+                        <div className="grid grid-cols-3 gap-2">
+                            {ROW_KEYS.map((r: string) => {
+                                const members = KANA_GROUP_MAP[r];
+                                const isActive = settings.activeRows.includes(r);
+                                return (
+                                    <button
+                                        key={r}
+                                        onClick={() => updateSettings('activeRows', isActive ? settings.activeRows.filter((x: any) => x!==r) : [...settings.activeRows, r])}
+                                        className={`py-2.5 rounded-xl border-2 font-bold text-sm transition-all ${isActive ? 'bg-amber-50 border-amber-500 text-amber-600 shadow-sm' : 'border-slate-100 bg-slate-50 text-slate-400'}`}
+                                    >
+                                        <span className="text-base">{r}</span>行
+                                        <div className="text-[10px] font-normal mt-0.5 opacity-60">{members.join('')}</div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="mt-2 text-xs text-center text-slate-400 font-bold">
+                            出題数: <span className="text-amber-600">{pairCount}</span> 問（全問出題）
+                        </div>
                     </section>
                     <section>
                         <label className="flex items-center gap-3 p-3 border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50">
@@ -59,15 +80,26 @@ export const LetterPairTrainer = ({ onBack, globalSettings, t }: any) => {
     const [endTime, setEndTime] = useState(0);
 
     const [settings, setSettings] = useState(() => {
-        const saved = localStorage.getItem('letter_settings_v7');
-        return saved ? JSON.parse(saved) : { activeRows: ['あ', 'か', 'さ', 'た', 'な', 'は'], qCount: 10, autoNext: 0, alwaysShowAnswer: false };
+        const saved = localStorage.getItem('letter_settings_v8');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // Migrate: remove qCount if present
+            if ('qCount' in parsed) delete parsed.qCount;
+            return { activeRows: ROW_KEYS, autoNext: 0, alwaysShowAnswer: false, ...parsed };
+        }
+        return { activeRows: [...ROW_KEYS], autoNext: 0, alwaysShowAnswer: false };
     });
 
     const [masterData, setMasterData] = useState<any>(() => {
-        const saved = localStorage.getItem('letter_master_custom_v6');
+        const saved = localStorage.getItem('letter_master_custom_v7');
         if (saved) {
             const parsed = JSON.parse(saved);
-            return { ...DEFAULT_LETTER_MASTER, ...parsed };
+            // Deep merge: for each group key, merge custom entries over defaults
+            const merged: any = {};
+            for (const key of Object.keys(DEFAULT_LETTER_MASTER)) {
+                merged[key] = { ...DEFAULT_LETTER_MASTER[key], ...(parsed[key] || {}) };
+            }
+            return merged;
         }
         return DEFAULT_LETTER_MASTER;
     });
@@ -75,8 +107,18 @@ export const LetterPairTrainer = ({ onBack, globalSettings, t }: any) => {
     const updateSettings = (key: any, val: any) => {
         const ns = {...settings, [key]: val};
         setSettings(ns);
-        localStorage.setItem('letter_settings_v7', JSON.stringify(ns));
+        localStorage.setItem('letter_settings_v8', JSON.stringify(ns));
     };
+
+    // Count total pairs for selected rows
+    const pairCount = useMemo(() => {
+        let count = 0;
+        settings.activeRows.forEach((row: string) => {
+            const data = masterData[row];
+            if (data) count += Object.keys(data).length;
+        });
+        return count;
+    }, [settings.activeRows, masterData]);
 
     const generateQuestions = useCallback(() => {
         const pool: any[] = [];
@@ -85,8 +127,9 @@ export const LetterPairTrainer = ({ onBack, globalSettings, t }: any) => {
             if (data) Object.keys(data).forEach(pair => pool.push({ pair, answer: data[pair], row }));
         });
         if (pool.length === 0) return [];
+        // Shuffle all - no slicing, output all questions
         const shuffled = [...pool].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, settings.qCount);
+        return shuffled;
     }, [settings, masterData]);
 
     const startTraining = (type: any) => {
@@ -154,7 +197,7 @@ export const LetterPairTrainer = ({ onBack, globalSettings, t }: any) => {
         if(newAns !== null && newAns.trim() !== "") {
             const updatedMaster = { ...masterData, [q.row]: { ...masterData[q.row], [q.pair]: newAns.trim() } };
             setMasterData(updatedMaster);
-            localStorage.setItem('letter_master_custom_v6', JSON.stringify(updatedMaster));
+            localStorage.setItem('letter_master_custom_v7', JSON.stringify(updatedMaster));
             const newQs = [...questions];
             newQs[currentIndex].answer = newAns.trim();
             setQuestions(newQs);
@@ -181,7 +224,7 @@ export const LetterPairTrainer = ({ onBack, globalSettings, t }: any) => {
                 <div className="text-xs font-bold text-amber-100">{t.descMemory}</div>
             </button>
 
-            {isSettingsOpen && <LetterPairSettingsModal settings={settings} updateSettings={updateSettings} onClose={() => setIsSettingsOpen(false)} t={t} />}
+            {isSettingsOpen && <LetterPairSettingsModal settings={settings} updateSettings={updateSettings} onClose={() => setIsSettingsOpen(false)} t={t} pairCount={pairCount} />}
         </div>
     );
 

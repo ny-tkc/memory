@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="card1bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#f1f5f9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+
+  <!-- Subtle pattern overlay -->
+  <rect width="512" height="512" rx="108" fill="white" opacity="0.05"/>
+
+  <!-- Back card (tilted left) -->
+  <g transform="translate(256,270) rotate(-12)">
+    <rect x="-70" y="-95" width="140" height="190" rx="12" fill="#1e1b4b" stroke="#312e81" stroke-width="2"/>
+    <rect x="-58" y="-83" width="116" height="166" rx="6" fill="none" stroke="#4338ca" stroke-width="1.5" opacity="0.5"/>
+    <!-- Diamond pattern on back -->
+    <path d="M0,-40 L15,-25 L0,-10 L-15,-25 Z" fill="#4338ca" opacity="0.4"/>
+    <path d="M0,10 L15,25 L0,40 L-15,25 Z" fill="#4338ca" opacity="0.4"/>
+  </g>
+
+  <!-- Front card (tilted right) - Ace of Spades -->
+  <g transform="translate(272,256) rotate(8)">
+    <rect x="-70" y="-95" width="140" height="190" rx="12" fill="url(#card1bg)" stroke="#cbd5e1" stroke-width="2"/>
+
+    <!-- Top-left corner -->
+    <text x="-52" y="-65" font-family="Inter, sans-serif" font-size="22" font-weight="800" fill="#1e293b">A</text>
+    <text x="-50" y="-47" font-family="serif" font-size="16" fill="#1e293b">&#9824;</text>
+
+    <!-- Center spade - large -->
+    <text x="0" y="15" font-family="serif" font-size="72" fill="#1e293b" text-anchor="middle">&#9824;</text>
+
+    <!-- Bottom-right corner (rotated) -->
+    <g transform="translate(52,80) rotate(180)">
+      <text x="-2" y="-10" font-family="Inter, sans-serif" font-size="22" font-weight="800" fill="#1e293b">A</text>
+      <text x="0" y="8" font-family="serif" font-size="16" fill="#1e293b">&#9824;</text>
+    </g>
+  </g>
+
+  <!-- Small brain/memory icon at bottom -->
+  <g transform="translate(256, 420)">
+    <circle cx="0" cy="0" r="28" fill="white" opacity="0.15"/>
+    <text x="0" y="8" font-family="sans-serif" font-size="28" fill="white" text-anchor="middle" opacity="0.9">&#129504;</text>
+  </g>
+</svg>
